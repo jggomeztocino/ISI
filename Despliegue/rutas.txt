@@ -1,0 +1,4 @@
+C:\ISI\Esquemas
+C:\ISI\Patrones
+C:\ISI\Workspace\APWorkspace\isi\src\main\resources\PatronesSinProcesar
+C:\ISI\Workspace\APWorkspace\isi\src\main\resources\PatronesProcesados

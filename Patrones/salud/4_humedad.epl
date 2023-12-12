@@ -1,0 +1,5 @@
+@public
+@name("Diferencia de humedad")
+insert into humedadPlanta
+select id, humedad_hojas, humedad_suelo, Math.abs(humedad_hojas - humedad_suelo) as diferencia, timestamp
+from estadoPlanta

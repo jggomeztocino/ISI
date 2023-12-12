@@ -1,0 +1,5 @@
+@public
+@Name("activarRiego")
+select ms.mediaSuelo as mediaSuelo, ma.mediaAmbiente as mediaAmbiente, 5 as tipoSensor, "Sistema de riego activado" as tipoEvento, ma.timestamp as timestamp
+from medicionSuelo.win:time_batch(15 minutes) as ms, medicionAmbiente.win:time_batch(15 minutes) as ma
+where (ms.mediaSuelo < 40 or ma.mediaAmbiente < 40) and (ms.mediaSuelo < 50)

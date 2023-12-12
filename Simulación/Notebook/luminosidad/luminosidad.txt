@@ -1,0 +1,59 @@
+%esperepl
+
+create schema condicionesClimaticas(temperatura double, humedad_ambiente double, luminosidad double, timestamp long);
+
+// Razón de los umbrales:
+// Para detectar el anochecer, podrías establecer un umbral donde la luminosidad disminuye por debajo de 40,000 lx, lo cual es indicativo de que la intensidad de luz necesaria para plantas de días largos no se está cumpliendo. 
+// Para el amanecer, podrías establecer un umbral donde la luminosidad supera los 40,000 lx, lo que indicaría el inicio de un nuevo ciclo de luz diurna. 
+// Estos umbrales asegurarían que la luz artificial solo se active cuando la luz natural es insuficiente para las necesidades de las plantas.
+
+@Name('faltaLuz')
+insert into faltaLuz 
+select t1.luminosidad as luminosidad, 1 as tipoSensor, "Luz encendida" as tipoEvento, t1.timestamp as timestamp
+from pattern [
+    every t1 = condicionesClimaticas(luminosidad <= 40000) -> 
+    t2 = condicionesClimaticas(luminosidad <= t1.luminosidad) -> 
+    t3 = condicionesClimaticas(luminosidad <= t2.luminosidad) -> 
+    t4 = condicionesClimaticas(luminosidad <= t3.luminosidad) -> 
+    t5 = condicionesClimaticas(luminosidad <= t4.luminosidad)
+];
+
+@Name('luzSuficiente')
+insert into luzSuficiente 
+select t1.luminosidad as luminosidad, 1 as tipoSensor, "Luz apagada" as tipoEvento, t1.timestamp as timestamp 
+from pattern [
+    every t1 = condicionesClimaticas(luminosidad >= 40000) -> 
+    t2 = condicionesClimaticas(luminosidad >= t1.luminosidad) -> 
+    t3 = condicionesClimaticas(luminosidad >= t2.luminosidad) -> 
+    t4 = condicionesClimaticas(luminosidad >= t3.luminosidad) -> 
+    t5 = condicionesClimaticas(luminosidad >= t4.luminosidad)
+];
+
+create context luzArtificial
+Initiated by faltaLuz terminated by luzSuficiente;
+
+
+%esperscenario
+// Eventos para falta de luz (luminosidad decreciente)
+condicionesClimaticas={temperatura=25, humedad_ambiente=50, luminosidad=40000, timestamp=0};
+t = t.plus(5 minutes);
+condicionesClimaticas={temperatura=25, humedad_ambiente=50, luminosidad=39000, timestamp=0};
+t = t.plus(5 minutes);
+condicionesClimaticas={temperatura=25, humedad_ambiente=50, luminosidad=38000, timestamp=0};
+t = t.plus(5 minutes);
+condicionesClimaticas={temperatura=25, humedad_ambiente=50, luminosidad=37000, timestamp=0};
+t = t.plus(5 minutes);
+condicionesClimaticas={temperatura=25, humedad_ambiente=50, luminosidad=36000, timestamp=0};
+t = t.plus(5 minutes);
+
+// Eventos para luz suficiente (luminosidad creciente)
+condicionesClimaticas={temperatura=25, humedad_ambiente=50, luminosidad=40000, timestamp=0};
+t = t.plus(5 minutes);
+condicionesClimaticas={temperatura=25, humedad_ambiente=50, luminosidad=41000, timestamp=0};
+t = t.plus(5 minutes);
+condicionesClimaticas={temperatura=25, humedad_ambiente=50, luminosidad=42000, timestamp=0};
+t = t.plus(5 minutes);
+condicionesClimaticas={temperatura=25, humedad_ambiente=50, luminosidad=43000, timestamp=0};
+t = t.plus(5 minutes);
+condicionesClimaticas={temperatura=25, humedad_ambiente=50, luminosidad=44000, timestamp=0};
+t = t.plus(5 minutes);

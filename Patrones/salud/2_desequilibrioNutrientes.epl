@@ -1,0 +1,16 @@
+// PATRONES DE NUTRIENTES
+// Valores óptimos nutrientes: https://www.frontiersin.org/articles/10.3389/fpls.2021.764103/full
+
+@public
+@Name("desequilibrioNutrientes")
+insert into desnivelNutrientes
+select id, pH, potasio, nitrogeno, fosforo, calcio, magnesio, azufre, 2 as tipoSensor, "Reajuste de nutrientes necesario" as tipoEvento, timestamp
+from estadoPlanta
+where 
+    pH < 5.5 or pH > 7.5 or 
+    potasio < 200 or potasio > 500 or 
+    nitrogeno < 1 or nitrogeno > 2 or 
+    fosforo < 0.2 or fosforo > 0.4 or 
+    calcio < 0.5 or calcio > 1 or 
+    magnesio < 0.2 or magnesio > 0.5 or 
+    azufre < 0.1 or azufre > 0.5

@@ -1,0 +1,6 @@
+@public 
+@name("nivelCO2")
+insert into nivelCO2
+select CO2, timestamp
+from gases
+output every 10 seconds

@@ -1,0 +1,5 @@
+Sensor tipo condicionesClimaticas: ID 1
+Sensor tipo estadoPlanta: ID 2
+Sensor tipo gases: ID 3
+Sensor tipo recursos: ID 4
+Sensor tipo mixto (patrón que usa más de un esquema): ID 5

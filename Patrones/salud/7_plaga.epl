@@ -1,0 +1,6 @@
+@public
+@Name("plaga")
+select count(*), 2 as tipoSensor, "Plaga detectada" as tipoEvento, timestamp
+from plantasEnfermas
+having count(*) > 5
+output every 1 minutes

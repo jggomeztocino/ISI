@@ -1,0 +1,15 @@
+@public @buseventtype create json schema estadoPlanta(
+    id int, 
+    pH double, 
+    nitrogeno double, 
+    fosforo double, 
+    potasio double, 
+    calcio double, 
+    magnesio double, 
+    azufre double, 
+    humedad_suelo double, 
+    humedad_hojas double, 
+    altura double, 
+    patogenos boolean, 
+    timestamp long
+)

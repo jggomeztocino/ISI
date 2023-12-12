@@ -1,0 +1,7 @@
+// Razón de los umbrales:
+// Para detectar el anochecer, podrías establecer un umbral donde la luminosidad disminuye por debajo de 40,000 lx, lo cual es indicativo de que la intensidad de luz necesaria para plantas de días largos no se está cumpliendo. 
+// Para el amanecer, podrías establecer un umbral donde la luminosidad supera los 40,000 lx, lo que indicaría el inicio de un nuevo ciclo de luz diurna. 
+// Estos umbrales asegurarían que la luz artificial solo se active cuando la luz natural es insuficiente para las necesidades de las plantas.
+
+create context luzArtificial
+Initiated by faltaLuz terminated by luzSuficiente

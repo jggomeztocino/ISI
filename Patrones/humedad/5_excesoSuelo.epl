@@ -1,0 +1,10 @@
+// Suelo
+// Umbral inferior: 40%
+// Umbral superior: 60%
+
+@public
+@Name("excesoSuelo")
+select e.id as id, e.humedad_suelo as humedad_suelo, 2 as tipoSensor, "Exceso de humedad en el suelo detectado" as tipoEvento, e.timestamp as timestamp 
+from pattern [
+    every-distinct(e.id) e=estadoPlanta(humedad_suelo > 60)
+]

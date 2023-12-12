@@ -1,0 +1,5 @@
+@public
+@Name("medicionSuelo")
+insert into medicionSuelo
+select avg(mediaSueloIndividual) as mediaSuelo, timestamp
+from medicionSueloIndividual

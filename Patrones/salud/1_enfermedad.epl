@@ -1,0 +1,5 @@
+@public
+@Name("enfermedad")
+insert into plantasEnfermas
+select id, patogenos, 2 as tipoSensor, "Patógenos detectados" as tipoEvento, timestamp
+from estadoPlanta(patogenos=true)

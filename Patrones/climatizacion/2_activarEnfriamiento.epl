@@ -1,0 +1,5 @@
+@public
+@Name("activarEnfriamiento")
+insert into altasTemperaturas
+select temperatura, timestamp, 1 as tipoSensor, "Ventilación activada" as tipoEvento
+from condicionesClimaticas(temperatura > 29) // Umbral superior

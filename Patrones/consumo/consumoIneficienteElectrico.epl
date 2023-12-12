@@ -1,0 +1,11 @@
+/*
+Si consideramos un invernadero que produce 100 kg de producto al día, esto se traduciría en un consumo de energía de aproximadamente 540 kWh por día.
+
+Si dividimos esto entre el número de segundos en un día (86400 segundos), obtenemos un consumo de energía de aproximadamente 0.00625 kWh por segundo, o 6.25 Wh por segundo.
+*/
+
+@public
+@Name("consumoIneficienteElectrico")
+select avg(consumo_energia) as consumo_energia, timestamp, 4 as tipoSensor, "nITROGEN abierto (no funciona)" as tipoEvento
+from recursos.win:time_batch(1 hours)
+having avg(consumo_energia) > 6.25

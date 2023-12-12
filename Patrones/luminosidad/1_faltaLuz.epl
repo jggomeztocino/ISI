@@ -1,0 +1,11 @@
+@public
+@Name('faltaLuz')
+insert into faltaLuz 
+select t1.luminosidad as luminosidad, 1 as tipoSensor, "Luz encendida" as tipoEvento, t1.timestamp as timestamp
+from pattern [
+    every t1 = condicionesClimaticas(luminosidad <= 40000) -> 
+    t2 = condicionesClimaticas(luminosidad <= t1.luminosidad) -> 
+    t3 = condicionesClimaticas(luminosidad <= t2.luminosidad) -> 
+    t4 = condicionesClimaticas(luminosidad <= t3.luminosidad) -> 
+    t5 = condicionesClimaticas(luminosidad <= t4.luminosidad)
+]

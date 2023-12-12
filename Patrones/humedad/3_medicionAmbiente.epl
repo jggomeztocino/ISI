@@ -1,0 +1,5 @@
+@public
+@Name("medicionAmbiente")
+insert into medicionAmbiente
+select avg(humedad_ambiente) as mediaAmbiente, timestamp
+from condicionesClimaticas.win:time_batch(15 minutes) // Media cada 15 minutos

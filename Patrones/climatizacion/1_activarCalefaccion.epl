@@ -1,0 +1,4 @@
+@public
+@Name("activarCalefaccion")
+select temperatura, timestamp, 1 as tipoSensor, "Calefacción activada" as tipoEvento
+from condicionesClimaticas(temperatura < 18) // Umbral inferior

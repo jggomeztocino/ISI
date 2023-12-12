@@ -1,0 +1,8 @@
+// Ambiente
+// Umbral inferior: 40%
+// Umbral superior: 70%
+
+@public
+@Name("excesoAmbiente")
+select mediaAmbiente, 1 as tipoSensor, "Humedad ambiental excesiva" as tipoEvento, timestamp
+from medicionAmbiente(mediaAmbiente > 70) // Una humedad ambiental superior al 70% favorece la aparición de moho

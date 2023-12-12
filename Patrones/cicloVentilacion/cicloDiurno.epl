@@ -1,0 +1,6 @@
+@public
+@name("cicloDiurno") // Favorecer CO2
+select t.CO2 as CO2, t.O2 as O2, t.timestamp as timestamp, 3 as tipoSensor, "Ciclo diurno iniciado" as tipoEvento
+from pattern [
+    every t = gases and timer:at(18, *, *, *, *)
+]

@@ -1,0 +1,82 @@
+%esperepl
+
+create schema recursos(consumo_agua double, consumo_energia double, timestamp long);
+
+@Name("consumoIneficienteElectrico")
+select avg(consumo_energia) as consumo_energia, timestamp, 4 as tipoSensor, "nITROGEN abierto (no funciona)" as tipoEvento
+from recursos.win:time_batch(1 hours)
+having avg(consumo_energia) > 6.25;
+
+@Name("consumoIneficienteAgua")
+select avg(consumo_agua) as consumo_agua, timestamp, 4 as tipoSensor, "Pérdida de agua" as tipoEvento
+from recursos.win:time_batch(1 hours)
+having avg(consumo_agua) > 0.019;
+
+/*
+Si consideramos un invernadero que produce 100 kg de producto al día, esto se traduciría en un consumo de energía de aproximadamente 540 kWh por día.
+
+Si dividimos esto entre el número de segundos en un día (86400 segundos), obtenemos un consumo de energía de aproximadamente 0.00625 kWh por segundo, o 6.25 Wh por segundo.
+*/
+@Name("cortocircuito")
+select t1.consumo_energia as consumo_energia, 4 as tipoSensor, "nITROGEN no responde (ha crasheado)" as tipoEvento, t1.timestamp as timestamp
+from pattern[
+    every t1 = recursos(consumo_energia > 6.25) ->
+    t2 = recursos(t2.consumo_energia > 1.3*t1.consumo_energia) ->
+    t3 = recursos(t3.consumo_energia > 1.3*t2.consumo_energia) ->
+    t4 = recursos(t4.consumo_energia > 1.3*t3.consumo_energia) ->
+    t5 = recursos(t5.consumo_energia > 1.3*t4.consumo_energia)
+];
+
+/*
+Si consideramos un invernadero con un área de cultivo de 100 metros cuadrados (aproximadamente 1076 pies cuadrados), esto se traduciría en un consumo de agua de aproximadamente 1226 a 1635 litros por día en el día más caluroso.
+
+Si dividimos esto entre el número de segundos en un día (86400 segundos), obtenemos un consumo de agua de aproximadamente 0.014 a 0.019 litros por segundo.
+
+Por lo tanto, podríamos considerar usar desde 0.014 a 0.019 como valor para representar un consumo de agua normal en un invernadero.
+*/
+@Name("fuga")
+select t1.consumo_agua as consumo_agua, 4 as tipoSensor, "Fuga de agua" as tipoEvento, t1.timestamp as timestamp
+from pattern[
+    every t1 = recursos(consumo_agua > 0.019) ->
+    t2 = recursos(t2.consumo_agua > 1.3*t1.consumo_agua) ->
+    t3 = recursos(t3.consumo_agua > 1.3*t2.consumo_agua) ->
+    t4 = recursos(t4.consumo_agua > 1.3*t3.consumo_agua) ->
+    t5 = recursos(t5.consumo_agua > 1.3*t4.consumo_agua)
+];
+
+%esperscenario
+// Eventos para consumo ineficiente de electricidad
+recursos={consumo_agua=0.015, consumo_energia=6.3, timestamp=0};
+t = t.plus(1 hours);
+recursos={consumo_agua=0.015, consumo_energia=7.0, timestamp=0};
+t = t.plus(1 hours);
+
+// Eventos para consumo ineficiente de agua
+recursos={consumo_agua=0.020, consumo_energia=5, timestamp=0};
+t = t.plus(1 hours);
+recursos={consumo_agua=0.025, consumo_energia=5, timestamp=0};
+t = t.plus(1 hours);
+
+// Eventos para cortocircuito
+recursos={consumo_agua=0.015, consumo_energia=6.5, timestamp=0};
+t = t.plus(5 seconds);
+recursos={consumo_agua=0.015, consumo_energia=8.5, timestamp=0};
+t = t.plus(5 seconds);
+recursos={consumo_agua=0.015, consumo_energia=11, timestamp=0};
+t = t.plus(5 seconds);
+recursos={consumo_agua=0.015, consumo_energia=14.3, timestamp=0};
+t = t.plus(5 seconds);
+recursos={consumo_agua=0.015, consumo_energia=18.6, timestamp=0};
+t = t.plus(5 seconds);
+
+// Eventos para fuga de agua
+recursos={consumo_agua=0.025, consumo_energia=5, timestamp=0};
+t = t.plus(5 seconds);
+recursos={consumo_agua=0.0325, consumo_energia=5, timestamp=0};
+t = t.plus(5 seconds);
+recursos={consumo_agua=0.04225, consumo_energia=5, timestamp=0};
+t = t.plus(5 seconds);
+recursos={consumo_agua=0.054925, consumo_energia=5, timestamp=0};
+t = t.plus(5 seconds);
+recursos={consumo_agua=0.0714025, consumo_energia=5, timestamp=0};
+t = t.plus(5 seconds);

@@ -1,0 +1,6 @@
+@public
+@Name("contaminacion")
+select t2.id as id, t2.pH as pH, t2.potasio as potasio, t2.nitrogeno as nitrogeno, t2.fosforo as fosforo, t2.calcio as calcio, t2.magnesio as magnesio, t2.azufre as azufre, 2 as tipoSensor, "Contaminación en planta detectada" as tipoEvento, t2.timestamp as timestamp
+from pattern [
+    every t1 = desnivelNutrientes -> t2 = estadoPlanta(patogenos = true and id = t1.id)
+]

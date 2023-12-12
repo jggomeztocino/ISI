@@ -1,0 +1,7 @@
+@public
+@Name("crecimiento")
+insert into plantasEnfermas
+select a 
+from pattern [
+  every a=estadoPlanta -> b=estadoPlanta(id=a.id, altura < a.altura - 1) where timer:within(2 days)
+]

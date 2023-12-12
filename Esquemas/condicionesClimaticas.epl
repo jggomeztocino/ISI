@@ -1,0 +1,1 @@
+@public @buseventtype create json schema condicionesClimaticas(temperatura double, humedad_ambiente double, luminosidad double, timestamp long)

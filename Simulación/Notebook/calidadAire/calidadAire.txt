@@ -1,0 +1,48 @@
+%esperepl
+
+create schema gases(CO2 double, O2 double, timestamp long);
+
+@name("nivelCO2")
+insert into nivelCO2
+select CO2, timestamp
+from gases
+output every 10 seconds;
+
+@name("nivelO2")
+insert into nivelO2
+select O2, timestamp
+from gases
+output every 10 seconds;
+
+@name("nivelAltoCO2")
+select CO2, timestamp, 3 as tipoSensor, "Nivel de CO2 alto" as tipoEvento
+from nivelCO2(CO2 > 800) 
+output every 10 seconds;
+
+@name("nivelAltoO2")
+select O2, timestamp, 3 as tipoSensor, "Nivel de O2 alto" as tipoEvento
+from nivelO2(O2 > 21)
+output every 10 seconds;
+
+@name("nivelBajoCO2")
+select CO2, timestamp, 3 as tipoSensor, "Nivel de CO2 bajo" as tipoEvento
+from nivelCO2(CO2 < 400) 
+output every 10 seconds;
+
+@name("nivelBajoO2")
+select O2, timestamp, 3 as tipoSensor, "Nivel de O2 bajo" as tipoEvento
+from nivelO2(O2 < 18) 
+output every 10 seconds;
+
+%esperscenario
+// Eventos para CO2 bajo o alto
+gases={CO2=350, O2=21, timestamp=0}; // CO2 bajo
+t = t.plus(1 minutes);
+gases={CO2=850, O2=21, timestamp=0}; // CO2 alto
+t = t.plus(1 minutes);
+
+// Eventos para O2 bajo o alto
+gases={CO2=500, O2=17, timestamp=0}; // O2 bajo
+t = t.plus(1 minutes);
+gases={CO2=500, O2=22, timestamp=0}; // O2 alto
+t = t.plus(1 minutes);

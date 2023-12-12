@@ -1,0 +1,6 @@
+@public
+@Name("medicionSueloIndividual")
+insert into medicionSueloIndividual
+select id, avg(humedad_suelo) as mediaSueloIndividual, timestamp
+from estadoPlanta.win:time_batch(15 minutes)
+group by id // Media cada 15 minutos

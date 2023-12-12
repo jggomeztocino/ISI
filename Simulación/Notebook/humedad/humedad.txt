@@ -1,0 +1,62 @@
+%esperepl
+
+create schema condicionesClimaticas(temperatura double, humedad_ambiente double, luminosidad double, timestamp long);
+create schema estadoPlanta(id int, pH double, nitrogeno double, fosforo double, potasio double, calcio double, magnesio double, azufre double, humedad_suelo double, humedad_hojas double, altura double, patogenos boolean, timestamp long);
+
+// Umbrales Ambiente
+// Umbral inferior: 40%
+// Umbral superior: 70%
+
+// Umbrales Suelo
+// Umbral inferior: 40%
+// Umbral superior: 60%
+
+
+@Name("medicionSueloIndividual")
+insert into medicionSueloIndividual
+select id, avg(humedad_suelo) as mediaSueloIndividual, timestamp
+from estadoPlanta.win:time_batch(15 minutes)
+group by id; // Media cada 15 minutos
+
+@Name("medicionSuelo")
+insert into medicionSuelo
+select avg(mediaSueloIndividual) as mediaSuelo, timestamp
+from medicionSueloIndividual;
+
+@Name("medicionAmbiente")
+insert into medicionAmbiente
+select avg(humedad_ambiente) as mediaAmbiente, timestamp
+from condicionesClimaticas.win:time_batch(15 minutes); // Media cada 15 minutos
+
+@Name("activarRiego")
+select ms.mediaSuelo as mediaSuelo, ma.mediaAmbiente as mediaAmbiente, 5 as tipoSensor, "Sistema de riego activado" as tipoEvento, ma.timestamp as timestamp
+from medicionSuelo.win:time_batch(15 minutes) as ms, medicionAmbiente.win:time_batch(15 minutes) as ma
+where (ms.mediaSuelo < 40 or ma.mediaAmbiente < 40) and (ms.mediaSuelo < 50);
+
+@Name("excesoSuelo")
+select e.id as id, e.humedad_suelo as humedad_suelo, 2 as tipoSensor, "Exceso de humedad en el suelo detectado" as tipoEvento, e.timestamp as timestamp 
+from pattern [
+    every-distinct(e.id) e=estadoPlanta(humedad_suelo > 60)
+];
+
+@Name("excesoAmbiente")
+select mediaAmbiente, 1 as tipoSensor, "Humedad ambiental excesiva" as tipoEvento, timestamp
+from medicionAmbiente(mediaAmbiente > 70); // Una humedad ambiental superior al 70% favorece la aparición de moho
+
+%esperscenario
+// Eventos para exceso de humedad en el suelo
+estadoPlanta={id=1, pH=6.5, nitrogeno=1.5, fosforo=0.3, potasio=300, calcio=0.75, magnesio=0.35, azufre=0.25, humedad_suelo=65, humedad_hojas=60, altura=150, patogenos=false, timestamp=0};
+t = t.plus(5 minutes);
+
+// Eventos para condiciones de activación de riego
+// Suelo y ambiente secos
+condicionesClimaticas={temperatura=25, humedad_ambiente=35, luminosidad=50000, timestamp=0};
+t = t.plus(15 minutes);
+estadoPlanta={id=1, pH=6.5, nitrogeno=1.5, fosforo=0.3, potasio=300, calcio=0.75, magnesio=0.35, azufre=0.25, humedad_suelo=35, humedad_hojas=55, altura=150, patogenos=false, timestamp=0};
+t = t.plus(15 minutes);
+
+// Suelo y ambiente moderadamente secos
+condicionesClimaticas={temperatura=25, humedad_ambiente=45, luminosidad=50000, timestamp=0};
+t = t.plus(15 minutes);
+estadoPlanta={id=2, pH=6.5, nitrogeno=1.5, fosforo=0.3, potasio=300, calcio=0.75, magnesio=0.35, azufre=0.25, humedad_suelo=39, humedad_hojas=55, altura=150, patogenos=false, timestamp=0};
+t = t.plus(15 minutes);

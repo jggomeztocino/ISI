@@ -1,0 +1,83 @@
+%esperepl
+
+create schema estadoPlanta(id int, pH double, nitrogeno double, fosforo double, potasio double, calcio double, magnesio double, azufre double, humedad_suelo double, humedad_hojas double, altura double, patogenos boolean, timestamp long);
+
+@Name("enfermedad")
+insert into plantasEnfermas
+select id, patogenos, 2 as tipoSensor, "Patógenos detectados" as tipoEvento, timestamp
+from estadoPlanta(patogenos=true);
+
+// Valores óptimos nutrientes: https://www.frontiersin.org/articles/10.3389/fpls.2021.764103/full
+@Name("desequilibrioNutrientes")
+insert into desnivelNutrientes
+select id, pH, potasio, nitrogeno, fosforo, calcio, magnesio, azufre, 2 as tipoSensor, "Reajuste de nutrientes necesario" as tipoEvento, timestamp
+from estadoPlanta
+where 
+    pH < 5.5 or pH > 7.5 or 
+    potasio < 200 or potasio > 500 or 
+    nitrogeno < 1 or nitrogeno > 2 or 
+    fosforo < 0.2 or fosforo > 0.4 or 
+    calcio < 0.5 or calcio > 1 or 
+    magnesio < 0.2 or magnesio > 0.5 or 
+    azufre < 0.1 or azufre > 0.5;
+
+@Name("crecimiento")
+insert into plantasEnfermas
+select a 
+from pattern [
+  every a=estadoPlanta -> b=estadoPlanta(id=a.id, altura < a.altura - 1) where timer:within(2 days)
+];
+
+@name("Diferencia de humedad")
+insert into humedadPlanta
+select id, humedad_hojas, humedad_suelo, Math.abs(humedad_hojas - humedad_suelo) as diferencia, timestamp
+from estadoPlanta;
+
+@Name("estresHidrico")
+select id, humedad_hojas, humedad_suelo, 2 as tipoSensor, "Estrés hídrico detectado" as tipoEvento, timestamp
+from humedadPlanta(diferencia >= 30);
+
+@Name("contaminacion")
+select t2.id as id, t2.pH as pH, t2.potasio as potasio, t2.nitrogeno as nitrogeno, t2.fosforo as fosforo, t2.calcio as calcio, t2.magnesio as magnesio, t2.azufre as azufre, 2 as tipoSensor, "Contaminación en planta detectada" as tipoEvento, t2.timestamp as timestamp
+from pattern [
+    every t1 = desnivelNutrientes -> t2 = estadoPlanta(patogenos = true and id = t1.id)
+];
+
+@Name("plaga")
+select count(*), 2 as tipoSensor, "Plaga detectada" as tipoEvento, timestamp
+from plantasEnfermas
+having count(*) > 5
+output every 1 minutes;
+
+
+
+%esperscenario
+// Eventos para estres hídrico
+estadoPlanta={id=2, pH=6.5, nitrogeno=1.5, fosforo=0.3, potasio=300, calcio=0.75, magnesio=0.35, azufre=0.25, humedad_suelo=30, humedad_hojas=70, altura=150, patogenos=false, timestamp=0};
+t = t.plus(5 minutes);
+
+// Eventos para crecimiento negativo
+estadoPlanta={id=3, pH=6.5, nitrogeno=1.5, fosforo=0.3, potasio=300, calcio=0.75, magnesio=0.35, azufre=0.25, humedad_suelo=50, humedad_hojas=50, altura=155, patogenos=false, timestamp=0};
+t = t.plus(2 days);
+estadoPlanta={id=3, pH=6.5, nitrogeno=1.5, fosforo=0.3, potasio=300, calcio=0.75, magnesio=0.35, azufre=0.25, humedad_suelo=50, humedad_hojas=50, altura=154, patogenos=false, timestamp=0};
+t = t.plus(5 minutes);
+
+// Eventos para desequilibrio de nutrientes
+estadoPlanta={id=4, pH=5, nitrogeno=1, fosforo=0.5, potasio=250, calcio=0.6, magnesio=0.3, azufre=0.2, humedad_suelo=50, humedad_hojas=50, altura=150, patogenos=false, timestamp=0};
+t = t.plus(5 minutes);
+
+// Eventos para enfermedad (presencia de patógenos)
+estadoPlanta={id=5, pH=6.5, nitrogeno=1.5, fosforo=0.3, potasio=300, calcio=0.75, magnesio=0.35, azufre=0.25, humedad_suelo=50, humedad_hojas=50, altura=150, patogenos=true, timestamp=0};
+t = t.plus(5 minutes);
+
+// Eventos para plaga (múltiples plantas enfermas)
+estadoPlanta={id=6, pH=6.5, nitrogeno=1.5, fosforo=0.3, potasio=300, calcio=0.75, magnesio=0.35, azufre=0.25, humedad_suelo=50, humedad_hojas=50, altura=150, patogenos=true, timestamp=0};
+t = t.plus(1 minutes);
+estadoPlanta={id=7, pH=6.5, nitrogeno=1.5, fosforo=0.3, potasio=300, calcio=0.75, magnesio=0.35, azufre=0.25, humedad_suelo=50, humedad_hojas=50, altura=150, patogenos=true, timestamp=0};
+t = t.plus(1 minutes);
+estadoPlanta={id=8, pH=6.5, nitrogeno=1.5, fosforo=0.3, potasio=300, calcio=0.75, magnesio=0.35, azufre=0.25, humedad_suelo=50, humedad_hojas=50, altura=150, patogenos=true, timestamp=0};
+t = t.plus(1 minutes);
+estadoPlanta={id=9, pH=6.5, nitrogeno=1.5, fosforo=0.3, potasio=300, calcio=0.75, magnesio=0.35, azufre=0.25, humedad_suelo=50, humedad_hojas=50, altura=150, patogenos=true, timestamp=0};
+t = t.plus(1 minutes);
+estadoPlanta={id=10, pH=6.5, nitrogeno=1.5, fosforo=0.3, potasio=300, calcio=0.75, magnesio=0.35, azufre=0.25, humedad_suelo=50, humedad_hojas=50, altura=150, patogenos=true, timestamp=0};
+t = t.plus(1 minutes);

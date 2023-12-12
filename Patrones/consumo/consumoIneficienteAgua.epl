@@ -1,0 +1,12 @@
+/*
+Si consideramos un invernadero con un área de cultivo de 100 metros cuadrados (aproximadamente 1076 pies cuadrados), esto se traduciría en un consumo de agua de aproximadamente 1226 a 1635 litros por día en el día más caluroso.
+
+Si dividimos esto entre el número de segundos en un día (86400 segundos), obtenemos un consumo de agua de aproximadamente 0.014 a 0.019 litros por segundo.
+
+Por lo tanto, podríamos considerar usar desde 0.014 a 0.019 como valor para representar un consumo de agua normal en un invernadero.
+*/
+@public
+@Name("consumoIneficienteAgua")
+select avg(consumo_agua) as consumo_agua, timestamp, 4 as tipoSensor, "Pérdida de agua" as tipoEvento
+from recursos.win:time_batch(1 hours)
+having avg(consumo_agua) > 0.019

@@ -1,0 +1,1 @@
+@public @buseventtype create json schema recursos(consumo_agua double, consumo_energia double, timestamp long)

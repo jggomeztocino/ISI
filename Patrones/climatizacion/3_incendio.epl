@@ -1,0 +1,9 @@
+@public
+@Name("incendio")
+select t1.temperatura as temperatura, 1 as tipoSensor, "Incendio" as tipoEvento, t1.timestamp as timestamp
+from pattern [
+    every t1 = altasTemperaturas(temperatura > 35) ->
+    t2 = altasTemperaturas(t2.temperatura >= temperatura) ->
+    t3 = altasTemperaturas(t3.temperatura >= t2.temperatura)
+    where timer:within(30 seconds)
+]

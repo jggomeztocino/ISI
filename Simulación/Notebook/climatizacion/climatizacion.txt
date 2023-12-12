@@ -1,0 +1,38 @@
+%esperepl
+
+create schema condicionesClimaticas(temperatura double, humedad_ambiente double, luminosidad double, timestamp long);
+
+@Name("activarCalefaccion")
+select temperatura, timestamp, 1 as tipoSensor, "Calefacción activada" as tipoEvento
+from condicionesClimaticas(temperatura < 18); // Umbral inferior
+
+@Name("activarEnfriamiento")
+insert into altasTemperaturas
+select temperatura, timestamp, 1 as tipoSensor, "Ventilación activada" as tipoEvento
+from condicionesClimaticas(temperatura > 29); // Umbral superior
+
+@Name("incendio")
+select t1.temperatura as temperatura, 1 as tipoSensor, "Incendio" as tipoEvento, t1.timestamp as timestamp
+from pattern [
+    every t1 = altasTemperaturas(temperatura > 35) ->
+    t2 = altasTemperaturas(t2.temperatura >= temperatura) ->
+    t3 = altasTemperaturas(t3.temperatura >= t2.temperatura)
+    where timer:within(30 seconds)
+];
+
+%esperscenario
+// Eventos para activar calefacción
+condicionesClimaticas={temperatura=16, humedad_ambiente=50, luminosidad=30000, timestamp=0};
+t = t.plus(1 minutes);
+
+// Eventos para activar enfriamiento
+condicionesClimaticas={temperatura=30, humedad_ambiente=50, luminosidad=30000, timestamp=0};
+t = t.plus(1 minutes);
+
+// Eventos para incendio
+condicionesClimaticas={temperatura=36, humedad_ambiente=50, luminosidad=30000, timestamp=0};
+t = t.plus(10 seconds);
+condicionesClimaticas={temperatura=37, humedad_ambiente=50, luminosidad=30000, timestamp=0};
+t = t.plus(10 seconds);
+condicionesClimaticas={temperatura=38, humedad_ambiente=50, luminosidad=30000, timestamp=0};
+t = t.plus(10 seconds);

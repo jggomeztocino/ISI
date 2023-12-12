@@ -1,0 +1,5 @@
+@public 
+@name("nivelAltoCO2")
+select CO2, timestamp, 3 as tipoSensor, "Nivel de CO2 alto" as tipoEvento
+from nivelCO2(CO2 > 800) 
+output every 10 seconds

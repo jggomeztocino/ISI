@@ -1,0 +1,4 @@
+@public
+@Name("estresHidrico")
+select id, humedad_hojas, humedad_suelo, 2 as tipoSensor, "Estrés hídrico detectado" as tipoEvento, timestamp
+from humedadPlanta(diferencia >= 30)
