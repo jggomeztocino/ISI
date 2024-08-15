@@ -1,4 +1,4 @@
-# Proyecto Final - Ingeniería de Sistemas de Información
+# Ingeniería de Sistemas de Información
 
 ## Descripción del Proyecto
 
@@ -19,9 +19,9 @@ Adicionalmente, se adoptaron los **principios de microservicios**, habilitando u
 - **Esper**: Implementación de patrones de eventos complejos (CEP).
 - **nITROGEN**: Simulador de eventos para IoT.
 - **RabbitMQ**: Bróker de mensajería para la integración de sistemas.
-- **Anypoint Studio (Mule)**: Plataforma de integración para conectar diferentes aplicaciones y sistemas.
+- **Anypoint Studio (Mule)**: Utilizado para diseñar y gestionar los flujos de integración entre los diferentes componentes del proyecto. Anypoint sirvió como el entorno principal para conectar las aplicaciones y sistemas, manejando la transmisión de datos entre los servicios y facilitando la orquestación de procesos complejos.
 - **APIs RESTful**: Implementación de servicios REST para extender la funcionalidad del proyecto.
-- **Bases de datos SQL (MariaDB)**: Almacenamiento de eventos simples y complejos.
+- **Bases de datos SQL (MariaDB)**: Almacenamiento persistente del histórico de eventos simples y complejos.
 - **Docker**: Despliegue de los diferentes microservicios en contenedores.
 - **Powershell Scripting**: Despliegue automático de esquemas y patrones.
 
@@ -32,11 +32,10 @@ Adicionalmente, se adoptaron los **principios de microservicios**, habilitando u
 - **Esquemas**: Esquemas escritos en EPL (Event Processing Language) utilizados para definir los eventos simples en el proyecto.
 - **Patrones**: Patrones escritos en EPL, que definen la lógica de detección de eventos complejos en el contexto de IoT y Ciudades Inteligentes.
 - **REST**: Implementación de APIs RESTful escritas en Java, proporcionando interfaces para interactuar con el sistema de manera programática.
-- **Servicios**: Código relacionado con los servicios que interactúan dentro de la arquitectura del proyecto, integrando componentes como RabbitMQ y Esper.
+- **Servicios**: Código relacionado con los servicios que interactúan dentro de la arquitectura del proyecto, integrando componentes como RabbitMQ y MariaDB con Anypoint Studio.
 - **Simulación**: Archivo XML que contiene la configuración necesaria para iniciar una simulación de eventos en nITROGEN.
 - **README.md**: Este documento, que proporciona una visión general del proyecto, su estructura y los principios utilizados en su desarrollo.
 
 ### Reconocimientos
 
 Este proyecto ha sido calificado con **Matrícula de Honor** gracias al esfuerzo y dedicación en su desarrollo, aplicando con éxito los conocimientos adquiridos durante la asignatura y demostrando una sólida comprensión de los principios de EDA y microservicios.
-
