@@ -35,7 +35,3 @@ Adicionalmente, se adoptaron los **principios de microservicios**, habilitando u
 - **Servicios**: Código relacionado con los servicios que interactúan dentro de la arquitectura del proyecto, integrando componentes como RabbitMQ y MariaDB con Anypoint Studio.
 - **Simulación**: Archivo XML que contiene la configuración necesaria para iniciar una simulación de eventos en nITROGEN.
 - **README.md**: Este documento, que proporciona una visión general del proyecto, su estructura y los principios utilizados en su desarrollo.
-
-### Reconocimientos
-
-Este proyecto ha sido calificado con **Matrícula de Honor** gracias al esfuerzo y dedicación en su desarrollo, aplicando con éxito los conocimientos adquiridos durante la asignatura y demostrando una sólida comprensión de los principios de EDA y microservicios.
