@@ -12,7 +12,7 @@ El objetivo principal del proyecto fue aplicar las tecnologías aprendidas en la
 
 El proyecto sigue los principios de **Arquitectura Dirigida por Eventos (EDA)**, centrándose en la detección y respuesta a eventos en tiempo real. La arquitectura fue diseñada para ser escalable y eficiente, utilizando un bus de servicios y un bróker de mensajería para asegurar la correcta comunicación y procesamiento de los eventos.
 
-Adicionalmente, se adoptaron los **principios de microservicios**, habilitando un contenedor individual para cada servicio utilizado en el proyecto, con la excepción de Anypoint. Esto permitió una mayor modularidad, facilidad de despliegue y mantenimiento del sistema.
+Adicionalmente, se adoptaron los **principios de microservicios**, habilitando un contenedor individual para cada servicio utilizado en el proyecto. Esto permitió una mayor modularidad, facilidad de despliegue y mantenimiento del sistema.
 
 ### Tecnologías Utilizadas
 
